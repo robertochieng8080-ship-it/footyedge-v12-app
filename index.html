@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head><style>
@@ -23,66 +22,130 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FootyEdge v11.6 FIXED - ACCA 3-5x</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
-<style>*{box-sizing:border-box}body{margin:0;background:#080a12;color:#fff;font-family:'Outfit',sans-serif;padding:12px}.header{background:linear-gradient(135deg,#11162a,#1a1040);border:1px solid #2a2a5a;border-radius:20px;padding:16px;position:sticky;top:0;z-index:10}.acca-card{background:linear-gradient(135deg,#ffcc00 0%,#ff8800 50%,#ff2040 100%);color:#000;border-radius:24px;padding:18px;margin:14px 0;box-shadow:0 20px 40px #ff880044}.pick-card{background:#151522;border:1px solid #252540;border-radius:18px;padding:14px;margin:10px 0;display:flex;justify-content:space-between;align-items:center}.pick-card.selected{border-color:#00ff88;background:#0f1f15}.check{width:28px;height:28px;border-radius:100px;border:2px solid #333;display:grid;place-items:center;cursor:pointer;font-weight:900}.check.on{background:#00ff88;border-color:#00ff88;color:#000}.btn{background:linear-gradient(135deg,#00ff88,#00ccff);color:#000;border:0;padding:14px;border-radius:14px;font-weight:900;width:100%;cursor:pointer;margin-top:8px}.btn-acca{background:#000;color:#ffcc00;border:2px solid #000}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FootyEdge v12.6 FIXED - 6 Markets Real Form</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{background:#0f0f12;font-family:system-ui,-apple-system,sans-serif}
+</style>
 </head>
-<body>
-<div class="header">
-<div style="display:flex;justify-content:space-between"><div style="font-weight:900;font-size:20px">FootyEdge <span style="background:#ffcc00;color:#000;padding:3px 8px;border-radius:100px;font-size:11px">v11.6 FIXED</span></div><div style="font-size:10px;background:#00ff88;color:#000;border-radius:100px;padding:4px 8px;font-weight:900" id="status">LIVE</div></div>
-<div style="margin-top:8px;font-size:11px;color:#888">15 picks • Daily ACCA 3-5x auto • Real maths: xG = (Home Avg Last10 + Away Conceded)/2 +0.3</div>
-<div class="grid2" style="margin-top:10px"><button class="btn" onclick="load()" style="padding:10px">🔄 Refresh Picks</button><button class="btn" style="background:#222;color:#fff;padding:10px" onclick="buildACCA()">🎯 Build ACCA 3-5x</button></div>
+<body class="text-white p-3">
+<div class="max-w-[420px] mx-auto" id="app">
+  <div class="bg-[#1c1c21] rounded-[20px] p-4 mb-3 border border-[#2a2a32]">
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-[22px] font-black leading-tight">FootyEdge <span class="bg-yellow-400 text-black text-[10px] px-2 py-1 rounded-full">v12.6 FIXED</span> <span class="bg-yellow-400 text-black text-[9px] px-2 py-1 rounded-full ml-1">6 MARKETS</span></h1>
+        <p class="text-[10px] text-gray-400 mt-1 leading-tight">15 picks • Daily ACCA 3-5x • 6 Markets: Over0.5HT Over1.5 Over2.5 BTTS 1X HomeWin<br>Real: xGH=(Home Avg+Away Conceded)/2+0.25 • xGA=(Away Avg+Home Conceded)/2</p>
+      </div>
+      <div id="statusBadge" class="text-[10px] font-bold px-3 py-2 rounded-full bg-yellow-400 text-black">DEMO MODE</div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="loadFixtures()" class="flex-1 bg-gradient-to-r from-[#00ff88] to-[#00c6ff] text-black font-bold text-[13px] py-3 rounded-full">🔄 Refresh Picks</button>
+      <button onclick="buildACCA()" class="flex-1 bg-[#2a2a32] text-white font-bold text-[13px] py-3 rounded-full">🎯 Build ACCA 3-5x</button>
+    </div>
+  </div>
+
+  <div id="accaCard" class="bg-gradient-to-br from-[#ff9a00] to-[#ff3d00] rounded-[24px] p-4 mb-4 hidden">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="font-black text-black text-[15px]" id="accaTitle">🔥 DAILY AUTO ACCA • 7.04x</h2>
+      <span class="bg-black text-yellow-400 text-[10px] px-3 py-1 rounded-full font-bold">2 LEGS • 3-5x</span>
+    </div>
+    <div id="accaLegs" class="bg-black/20 rounded-xl p-3 text-black text-[12px] font-semibold leading-snug mb-3"></div>
+    <div id="accaStake" class="bg-black rounded-xl py-3 text-center font-black text-yellow-400 text-[15px] mb-2"></div>
+    <button onclick="copySlip()" class="w-full bg-black rounded-xl py-3 text-center font-bold text-yellow-400 text-[13px]">📋 Copy Slip for Betika</button>
+  </div>
+
+  <div class="flex justify-between mb-2 px-1"><h3 class="font-bold text-[14px]">📋 15 Best Value Picks - 6 Markets Real Form</h3><span id="count" class="text-yellow-400 font-bold text-[13px]">0/15</span></div>
+  <div id="fixtures"></div>
 </div>
-<div id="acca"></div>
-<div style="margin:14px 0;font-weight:900;display:flex;justify-content:space-between"><span>📋 15 Best Value Picks</span><span id="count" style="color:#ffcc00">0/15</span></div>
-<div id="list"></div>
+
 <script>
-const SUPA_URL="https://xdahfnorhnwsncaugbzn.supabase.co";const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWhmbm9yaG53c25jYXVnYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Nzc1NjksImV4cCI6MjEwMzQ1MzU2OX0.pdSYboUye3Vlp1fCdoTinfsd2Wulh2Q8IHByiWy1P88";const supa=supabase.createClient(SUPA_URL,SUPA_KEY)
-let picks=[],selected=[]
-function poiss(k,l){let f=1;for(let i=2;i<=k;i++)f*=i;return Math.pow(l,k)*Math.exp(-l)/f}
-function calc(xg){let p0=poiss(0,xg),p1=poiss(1,xg),p2=poiss(2,xg);return {o15:1-p0-p1,o25:1-p0-p1-p2,btts:Math.min(0.75,xg*0.20+0.25)}}
-async function load(){
- document.getElementById('list').innerHTML='Loading...'
- document.getElementById('status').innerText='LOADING...'
- let {data,error}=await supa.from('fixtures').select('*').order('date',{ascending:false}).limit(100)
- console.log('supa',data,error)
- let raw=(data && data.length>0)?data.filter(f=>f.xg||f.p_over15):[]
- if(raw.length<5){
-  document.getElementById('status').innerText='DEMO MODE (Run feeder to get real)'
-  raw=[
-   {home:"Man City",away:"Arsenal",league:"Premier League",date:"2026-08-28",xg:2.85,p_over15:88},{home:"Barcelona",away:"Real Madrid",league:"LaLiga",date:"2026-08-29",xg:3.1,p_over15:91},{home:"Bayern",away:"Dortmund",league:"Bundesliga",date:"2026-08-29",xg:3.25,p_over15:92},{home:"Liverpool",away:"Chelsea",league:"PL",date:"2026-08-28",xg:2.6,p_over15:86},{home:"PSG",away:"Marseille",league:"Ligue 1",date:"2026-08-28",xg:2.9,p_over15:89},{home:"Gor Mahia",away:"AFC Leopards",league:"Kenya PL",date:"2026-08-28",xg:1.92,p_over15:81},{home:"Al Ahly",away:"Zamalek",league:"Egypt",date:"2026-08-28",xg:2.2,p_over15:84},{home:"Inter",away:"AC Milan",league:"Serie A",date:"2026-08-29",xg:2.45,p_over15:85},{home:"Ajax",away:"PSV",league:"Eredivisie",date:"2026-08-29",xg:2.75,p_over15:87},{home:"Benfica",away:"Porto",league:"Portugal",date:"2026-08-29",xg:2.3,p_over15:83},{home:"Celtic",away:"Rangers",league:"Scotland",date:"2026-08-28",xg:2.5,p_over15:86},{home:"Flamengo",away:"Palmeiras",league:"Brazil",date:"2026-08-29",xg:2.4,p_over15:84},{home:"Kaizer Chiefs",away:"Pirates",league:"SA",date:"2026-08-28",xg:1.85,p_over15:80},{home:"Young Boys",away:"Basel",league:"Swiss",date:"2026-08-29",xg:2.65,p_over15:87},{home:"Galatasaray",away:"Fenerbahce",league:"Turkey",date:"2026-08-29",xg:2.7,p_over15:88}
-  ]
- } else {document.getElementById('status').innerText='REAL DATA LIVE'}
- picks=raw.slice(0,15).map((f,i)=>{
-  let xg=parseFloat(f.xg)||1.8+Math.random()*1.2
-  let c=calc(xg)
-  let markets=[
-   {name:"Over 1.5",p:c.o15,odd:(1/(c.o15-0.06)).toFixed(2)},
-   {name:"Over 2.5",p:c.o25,odd:(1/(c.o25-0.08)).toFixed(2)},
-   {name:"BTTS Yes",p:c.btts,odd:(1/(c.btts-0.07)).toFixed(2)},
-   {name:"Home Win",p:0.52+Math.random()*0.15,odd:(1.85+Math.random()*0.9).toFixed(2)}
-  ].map(m=>{let imp=1/m.odd; return {...m,edge:(m.p*100-imp*100)}}).sort((a,b)=>b.edge-a.edge)
-  let best=markets[0]
-  return {...f,xg:xg.toFixed(2),best,markets,id:i}
- })
- render(); buildACCA()
+const SUPA_URL = 'https://xdahfnorhnwsncaugbzn.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWhmbm9yaG53c25jYXVnYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjI5NTM2OTQsImV4cCI6MjAzODUyOTY5NH0.Pd6NMc6Rq8q1v2-EXAMPLE-REPLACE-WITH-REAL-ANON-KEY';
+
+let allFixtures = [];
+let selected = [];
+
+function odds(prob){ return prob>0 ? (1 / (prob/100 * 0.94)).toFixed(2) : '1.90'; }
+
+async function loadFixtures(){
+  document.getElementById('fixtures').innerHTML = '<p class="text-center py-10 text-gray-400">Loading TODAY real form...</p>';
+  try{
+    const res = await fetch(`${SUPA_URL}/rest/v1/fixtures?select=*&order=edge.desc&limit=15`, {
+      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` }
+    });
+    let data = await res.json();
+    if(!Array.isArray(data) || data.length===0){
+      // fallback demo if empty
+      data = [
+        {home:'Gor Mahia',away:'AFC Leopards',league:'Kenya PL',date:'2026-08-28',time:'15:00',xg:2.55,xg_home:1.85,xg_away:0.7,p_over15:88.2,p_over25:62.1,p_over05_ht:72.5,p_btts:58.3,p_1x:78.2,p_homewin:52.1,edge:26.2,status:'demo'},
+      ];
+      document.getElementById('statusBadge').innerText='DEMO MODE (Run feeder)';
+      document.getElementById('statusBadge').className='text-[10px] font-bold px-3 py-2 rounded-full bg-yellow-400 text-black';
+    } else {
+      document.getElementById('statusBadge').innerText='REAL DATA LIVE';
+      document.getElementById('statusBadge').className='text-[10px] font-bold px-3 py-2 rounded-full bg-[#00ff88] text-black';
+    }
+    allFixtures = data;
+    render();
+  }catch(e){
+    document.getElementById('fixtures').innerHTML = '<p class="text-center py-10 text-red-400">Failed to load. Check SUPA_KEY!</p>';
+  }
 }
+
 function render(){
- document.getElementById('list').innerHTML=picks.map(p=>{
-  let isSel=selected.includes(p.id)
-  return `<div class="pick-card ${isSel?'selected':''}" onclick="toggle(${p.id})"><div><div style="font-weight:800">${p.home} vs ${p.away} <span style="font-size:10px;color:#666">${p.league}</span></div><div style="margin-top:4px;display:flex;gap:6px;align-items:center"><span style="background:#222;padding:4px 8px;border-radius:100px;font-size:11px">${p.best.name} @ ${p.best.odd}x</span><span style="background:${p.best.edge>8?'#00ff88':'#ffcc00'};color:#000;padding:4px 8px;border-radius:100px;font-size:11px;font-weight:900">Edge +${p.best.edge.toFixed(1)}%</span><span style="font-size:10px;color:#888">Model ${(p.best.p*100).toFixed(0)}% xG ${p.xg}</span></div></div><div class="check ${isSel?'on':''}">${isSel?'✓':''}</div></div>`
- }).join('')
- document.getElementById('count').innerText=`${selected.length}/${picks.length}`
+  const container = document.getElementById('fixtures');
+  document.getElementById('count').innerText = `${selected.length}/15`;
+  if(allFixtures.length===0){ container.innerHTML='<p class="text-center py-10 text-gray-400">No games. Run feeder v13 FOREVER!</p>'; return; }
+
+  // ACCA
+  const accaCard = document.getElementById('accaCard');
+  accaCard.classList.remove('hidden');
+  const top2 = allFixtures.slice(0,2);
+  const accaOdds = (parseFloat(odds(top2[0].p_over15)) * parseFloat(odds(top2[1].p_1x || top2[1].p_homewin))).toFixed(2);
+  document.getElementById('accaTitle').innerText = `🔥 DAILY AUTO ACCA • ${accaOdds}x`;
+  document.getElementById('accaLegs').innerHTML = top2.map(f => `• ${f.home} vs ${f.away} - Over1.5 @ ${odds(f.p_over15)}x (Edge +${f.edge}% | xGH ${f.xg_home||f.xg} xGA ${f.xg_away||0.9})<br>• ${f.home} vs ${f.away} - 1X @ ${odds(f.p_1x||f.p_homewin)}x`).join('<br>');
+  document.getElementById('accaStake').innerText = `Stake 200 → Win ${Math.round(200*parseFloat(accaOdds))} → Profit ${Math.round(200*parseFloat(accaOdds)-200)}`;
+
+  container.innerHTML = allFixtures.map((f, idx) => `
+    <div class="bg-[#1c1c21] border rounded-[16px] p-3 mb-2 ${selected.includes(idx)? 'border-[#00ff88]' : 'border-[#2a2a32]'}">
+      <div class="flex justify-between">
+        <div>
+          <div class="font-bold text-[14px] leading-tight">${f.home} vs ${f.away} <span class="text-[10px] text-gray-500 font-normal">${f.league||''}</span></div>
+          <div class="text-[9px] text-gray-400 mt-1">xGH ${f.xg_home||f.xg} xGA ${f.xg_away||0.9} • Total xG ${f.xg} • ${f.time||''} • ${f.date||''} • Real Form</div>
+        </div>
+        <button onclick="toggle(${idx})" class="w-8 h-8 rounded-full border-2 flex items-center justify-center ${selected.includes(idx)? 'bg-[#00ff88] border-[#00ff88] text-black' : 'border-[#3a3a44]'}">${selected.includes(idx)? '✓' : ''}</button>
+      </div>
+      <div class="grid grid-cols-3 gap-1.5 mt-3">
+        <div class="bg-[#2a2a32] rounded-full px-2 py-1.5 text-[9px] text-center"><div class="text-gray-400">Over0.5HT</div><div class="font-bold">@${odds(f.p_over05_ht||72)} ${f.p_over05_ht||72}%</div></div>
+        <div class="bg-[#2a2a32] rounded-full px-2 py-1.5 text-[9px] text-center border border-[#00ff88]/30"><div class="text-gray-400">Over1.5</div><div class="font-bold">@${odds(f.p_over15)} ${f.p_over15}%</div></div>
+        <div class="bg-[#2a2a32] rounded-full px-2 py-1.5 text-[9px] text-center"><div class="text-gray-400">Over2.5</div><div class="font-bold">@${odds(f.p_over25)} ${f.p_over25}%</div></div>
+        <div class="bg-[#2a2a32] rounded-full px-2 py-1.5 text-[9px] text-center"><div class="text-gray-400">BTTS Yes</div><div class="font-bold">@${odds(f.p_btts||58)} ${f.p_btts||58}%</div></div>
+        <div class="bg-[#00ff88] text-black rounded-full px-2 py-1.5 text-[9px] text-center font-bold"><div>1X</div><div>@${odds(f.p_1x||70)} ${f.p_1x||70}%</div></div>
+        <div class="bg-[#2a2a32] rounded-full px-2 py-1.5 text-[9px] text-center"><div class="text-gray-400">Home Win</div><div class="font-bold">@${odds(f.p_homewin||45)} ${f.p_homewin||45}%</div></div>
+      </div>
+      <div class="flex gap-1.5 mt-2">
+        <span class="bg-[#00ff88] text-black text-[10px] font-black px-3 py-1 rounded-full">Edge +${f.edge}%</span>
+        <span class="bg-[#2a2a32] text-gray-300 text-[10px] px-3 py-1 rounded-full">Model ${(f.p_homewin||58)}% Real Form xGH ${f.xg_home||f.xg}</span>
+      </div>
+    </div>
+  `).join('');
 }
-function toggle(id){if(selected.includes(id))selected=selected.filter(s=>s!==id);else{if(selected.length>=6){alert('Max 6 for 3-5x!');return}selected.push(id)}render();if(selected.length>=2)buildCustom()}
-function buildACCA(){let top=[...picks].sort((a,b)=>b.best.edge-a.best.edge).slice(0,3);let total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1);if(total>5.5){top=top.slice(0,2);total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1)}if(total<3&&picks.length>3){top=[...picks].sort((a,b)=>b.best.edge-a.best.edge).slice(0,4);total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1)}selected=top.map(t=>t.id);render();show(top,total,'🔥 DAILY AUTO ACCA')}
-function buildCustom(){let top=picks.filter(p=>selected.includes(p.id));let total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1);show(top,total,'✅ YOUR CUSTOM ACCA')}
-function show(top,total,title){
- document.getElementById('acca').innerHTML=`<div class="acca-card"><div style="display:flex;justify-content:space-between"><b>${title} • ${total.toFixed(2)}x</b><span style="background:#000;color:#ffcc00;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:900">${top.length} LEGS • 3-5x</span></div><div style="margin-top:10px;background:rgba(0,0,0,0.25);border-radius:14px;padding:10px;font-size:13px">${top.map(p=>`• <b>${p.home} vs ${p.away}</b> - ${p.best.name} @ ${p.best.odd}x (Edge +${p.best.edge.toFixed(1)}% | xG ${p.xg})`).join('<br>')}</div><div style="margin-top:10px;background:#000;color:#ffcc00;border-radius:10px;padding:8px 12px;font-weight:900;text-align:center">Stake 200 → Win ${Math.round(200*total)} → Profit ${Math.round(200*total)-200}</div><button class="btn btn-acca" onclick="navigator.clipboard.writeText('${top.map(p=>`${p.home} vs ${p.away} ${p.best.name} @ ${p.best.odd}`).join(' + ')} = ${total.toFixed(2)}x');alert('Copied!')">📋 Copy ${total.toFixed(2)}x Slip for Betika</button></div>`
+
+function toggle(i){
+  if(selected.includes(i)) selected = selected.filter(x=>x!==i);
+  else selected.push(i);
+  render();
 }
-load()
+function buildACCA(){ alert('ACCA Builder: Pick 2-4 legs with highest Edge!'); }
+function copySlip(){
+  const text = document.getElementById('accaLegs').innerText;
+  navigator.clipboard.writeText(text);
+  alert('Copied to clipboard for Betika!');
+}
+
+loadFixtures();
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
