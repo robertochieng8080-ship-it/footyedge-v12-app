@@ -26,9 +26,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FootyEdge v12.6 FIXED - 6 Markets Real Form</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
-body{background:#0f0f12;font-family:system-ui,-apple-system,sans-serif}
-</style>
+<style>body{background:#0f0f12;font-family:system-ui,-apple-system,sans-serif}</style>
 </head>
 <body class="text-white p-3">
 <div class="max-w-[420px] mx-auto" id="app">
@@ -36,9 +34,9 @@ body{background:#0f0f12;font-family:system-ui,-apple-system,sans-serif}
     <div class="flex justify-between items-start">
       <div>
         <h1 class="text-[22px] font-black leading-tight">FootyEdge <span class="bg-yellow-400 text-black text-[10px] px-2 py-1 rounded-full">v12.6 FIXED</span> <span class="bg-yellow-400 text-black text-[9px] px-2 py-1 rounded-full ml-1">6 MARKETS</span></h1>
-        <p class="text-[10px] text-gray-400 mt-1 leading-tight">15 picks • Daily ACCA 3-5x • 6 Markets: Over0.5HT Over1.5 Over2.5 BTTS 1X HomeWin<br>Real: xGH=(Home Avg+Away Conceded)/2+0.25 • xGA=(Away Avg+Home Conceded)/2</p>
+        <p class="text-[10px] text-gray-400 mt-1 leading-tight">15 picks • Daily ACCA 3-5x • 6 Markets: Over0.5HT Over1.5 Over2.5 BTTS 1X HomeWin<br>Real: xGH=(Home Avg+Away Conceded)/2+0.25 • Top first, minor backup = games everyday FOREVER</p>
       </div>
-      <div id="statusBadge" class="text-[10px] font-bold px-3 py-2 rounded-full bg-yellow-400 text-black">DEMO MODE</div>
+      <div id="statusBadge" class="text-[10px] font-bold px-3 py-2 rounded-full bg-yellow-400 text-black">LOADING...</div>
     </div>
     <div class="flex gap-2 mt-4">
       <button onclick="loadFixtures()" class="flex-1 bg-gradient-to-r from-[#00ff88] to-[#00c6ff] text-black font-bold text-[13px] py-3 rounded-full">🔄 Refresh Picks</button>
@@ -58,11 +56,12 @@ body{background:#0f0f12;font-family:system-ui,-apple-system,sans-serif}
 
   <div class="flex justify-between mb-2 px-1"><h3 class="font-bold text-[14px]">📋 15 Best Value Picks - 6 Markets Real Form</h3><span id="count" class="text-yellow-400 font-bold text-[13px]">0/15</span></div>
   <div id="fixtures"></div>
+  <p class="text-[9px] text-gray-500 text-center mt-6">v13 FOREVER • Top leagues first, minor backup • Games everyday forever • Real team form</p>
 </div>
 
 <script>
 const SUPA_URL = 'https://xdahfnorhnwsncaugbzn.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWhmbm9yaG53c25jYXVnYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjI5NTM2OTQsImV4cCI6MjAzODUyOTY5NH0.Pd6NMc6Rq8q1v2-EXAMPLE-REPLACE-WITH-REAL-ANON-KEY';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWhmbm9yaG53c25jYXVnYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Nzc1NjksImV4cCI6MjEwMzQ1MzU2OX0.pdSYboUye3Vlp1fCdoTinfsd2Wulh2Q8IHByiWy1P88';
 
 let allFixtures = [];
 let selected = [];
@@ -77,35 +76,35 @@ async function loadFixtures(){
     });
     let data = await res.json();
     if(!Array.isArray(data) || data.length===0){
-      // fallback demo if empty
-      data = [
-        {home:'Gor Mahia',away:'AFC Leopards',league:'Kenya PL',date:'2026-08-28',time:'15:00',xg:2.55,xg_home:1.85,xg_away:0.7,p_over15:88.2,p_over25:62.1,p_over05_ht:72.5,p_btts:58.3,p_1x:78.2,p_homewin:52.1,edge:26.2,status:'demo'},
-      ];
-      document.getElementById('statusBadge').innerText='DEMO MODE (Run feeder)';
+      document.getElementById('statusBadge').innerText='DEMO MODE - Run feeder v13';
       document.getElementById('statusBadge').className='text-[10px] font-bold px-3 py-2 rounded-full bg-yellow-400 text-black';
-    } else {
-      document.getElementById('statusBadge').innerText='REAL DATA LIVE';
-      document.getElementById('statusBadge').className='text-[10px] font-bold px-3 py-2 rounded-full bg-[#00ff88] text-black';
+      document.getElementById('fixtures').innerHTML='<p class="text-center py-10 text-yellow-400">No games yet.<br>Run feed.yml v13 FOREVER workflow in GitHub!</p>';
+      return;
     }
+    document.getElementById('statusBadge').innerText='REAL DATA LIVE';
+    document.getElementById('statusBadge').className='text-[10px] font-bold px-3 py-2 rounded-full bg-[#00ff88] text-black';
     allFixtures = data;
     render();
   }catch(e){
-    document.getElementById('fixtures').innerHTML = '<p class="text-center py-10 text-red-400">Failed to load. Check SUPA_KEY!</p>';
+    document.getElementById('fixtures').innerHTML = '<p class="text-center py-10 text-red-400">Failed to load.<br>Check internet!</p>';
+    console.log(e);
   }
 }
 
 function render(){
   const container = document.getElementById('fixtures');
   document.getElementById('count').innerText = `${selected.length}/15`;
-  if(allFixtures.length===0){ container.innerHTML='<p class="text-center py-10 text-gray-400">No games. Run feeder v13 FOREVER!</p>'; return; }
+  if(allFixtures.length===0) return;
 
-  // ACCA
+  // ACCA 3-5x auto
   const accaCard = document.getElementById('accaCard');
   accaCard.classList.remove('hidden');
   const top2 = allFixtures.slice(0,2);
-  const accaOdds = (parseFloat(odds(top2[0].p_over15)) * parseFloat(odds(top2[1].p_1x || top2[1].p_homewin))).toFixed(2);
+  const o1 = parseFloat(odds(top2[0].p_over15 || 80));
+  const o2 = parseFloat(odds(top2[1].p_1x || top2[1].p_homewin || 70));
+  const accaOdds = (o1 * o2).toFixed(2);
   document.getElementById('accaTitle').innerText = `🔥 DAILY AUTO ACCA • ${accaOdds}x`;
-  document.getElementById('accaLegs').innerHTML = top2.map(f => `• ${f.home} vs ${f.away} - Over1.5 @ ${odds(f.p_over15)}x (Edge +${f.edge}% | xGH ${f.xg_home||f.xg} xGA ${f.xg_away||0.9})<br>• ${f.home} vs ${f.away} - 1X @ ${odds(f.p_1x||f.p_homewin)}x`).join('<br>');
+  document.getElementById('accaLegs').innerHTML = top2.map(f => `• ${f.home} vs ${f.away} - Over1.5 @ ${odds(f.p_over15)}x (Edge +${f.edge}% | xGH ${f.xg_home||f.xg} xGA ${f.xg_away||0.9})<br>• ${f.home} vs ${f.away} - 1X @ ${odds(f.p_1x||f.p_homewin||70)}x (xGH ${f.xg_home||f.xg})`).join('<br>');
   document.getElementById('accaStake').innerText = `Stake 200 → Win ${Math.round(200*parseFloat(accaOdds))} → Profit ${Math.round(200*parseFloat(accaOdds)-200)}`;
 
   container.innerHTML = allFixtures.map((f, idx) => `
@@ -113,7 +112,7 @@ function render(){
       <div class="flex justify-between">
         <div>
           <div class="font-bold text-[14px] leading-tight">${f.home} vs ${f.away} <span class="text-[10px] text-gray-500 font-normal">${f.league||''}</span></div>
-          <div class="text-[9px] text-gray-400 mt-1">xGH ${f.xg_home||f.xg} xGA ${f.xg_away||0.9} • Total xG ${f.xg} • ${f.time||''} • ${f.date||''} • Real Form</div>
+          <div class="text-[9px] text-gray-400 mt-1">xGH ${f.xg_home||f.xg} xGA ${f.xg_away||0.9} • Total xG ${f.xg} • ${f.time||''} • ${f.date||''} • REAL FORM</div>
         </div>
         <button onclick="toggle(${idx})" class="w-8 h-8 rounded-full border-2 flex items-center justify-center ${selected.includes(idx)? 'bg-[#00ff88] border-[#00ff88] text-black' : 'border-[#3a3a44]'}">${selected.includes(idx)? '✓' : ''}</button>
       </div>
@@ -127,7 +126,7 @@ function render(){
       </div>
       <div class="flex gap-1.5 mt-2">
         <span class="bg-[#00ff88] text-black text-[10px] font-black px-3 py-1 rounded-full">Edge +${f.edge}%</span>
-        <span class="bg-[#2a2a32] text-gray-300 text-[10px] px-3 py-1 rounded-full">Model ${(f.p_homewin||58)}% Real Form xGH ${f.xg_home||f.xg}</span>
+        <span class="bg-[#2a2a32] text-gray-300 text-[10px] px-3 py-1 rounded-full">Model ${(f.p_homewin||58)}% xGH ${f.xg_home||f.xg}</span>
       </div>
     </div>
   `).join('');
@@ -138,11 +137,13 @@ function toggle(i){
   else selected.push(i);
   render();
 }
-function buildACCA(){ alert('ACCA Builder: Pick 2-4 legs with highest Edge!'); }
+function buildACCA(){ 
+  const best = allFixtures.slice(0,3).map(f=>`${f.home} vs ${f.away} Over1.5 @${odds(f.p_over15)}`).join('\n');
+  alert('Top 3 value picks:\n'+best); 
+}
 function copySlip(){
   const text = document.getElementById('accaLegs').innerText;
-  navigator.clipboard.writeText(text);
-  alert('Copied to clipboard for Betika!');
+  navigator.clipboard.writeText(text).then(()=>alert('Copied for Betika!')).catch(()=>alert(text));
 }
 
 loadFixtures();
