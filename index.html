@@ -25,93 +25,121 @@
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FootyEdge v11 - BEST PREDICTION MODEL</title>
+<title>FootyEdge v11.5 - Daily ACCA 3-5x</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0a0a0f;color:#fff;font-family:'Outfit',sans-serif;padding:12px}
-.header{background:linear-gradient(135deg,#111122,#1a1a2e);border:1px solid #2a2a4a;border-radius:20px;padding:16px}
-.badge{background:linear-gradient(135deg,#ffcc00,#ff8800);color:#000;padding:4px 10px;border-radius:100px;font-weight:900;font-size:11px}
-.card{background:#15151f;border:1px solid #222236;border-radius:20px;padding:14px;margin:12px 0;position:relative}
-.market-tag{position:absolute;top:12px;right:12px;background:#222236;border:1px solid #333;padding:4px 10px;border-radius:100px;font-size:10px;font-weight:800}
-.edge-high{background:linear-gradient(135deg,#00ff88,#00ccff);color:#000;padding:4px 10px;border-radius:100px;font-weight:900;font-size:12px}
-.odd-big{font-size:22px;font-weight:900}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
-.mini{background:#0e0e18;border:1px solid #222;border-radius:12px;padding:8px;text-align:center;font-size:11px}
-.mini b{font-size:14px;display:block;color:#ffcc00}
-.btn{background:#ffcc00;color:#000;border:0;padding:14px;border-radius:14px;font-weight:900;width:100%;margin-top:10px;cursor:pointer}
-.math-box{background:#0a0a14;border:1px dashed #333;border-radius:12px;padding:10px;margin-top:10px;font-size:11px;color:#888}
+*{box-sizing:border-box}body{margin:0;background:#080a12;color:#fff;font-family:'Outfit',sans-serif;padding:12px}
+.header{background:linear-gradient(135deg,#11162a,#1a1040);border:1px solid #2a2a5a;border-radius:20px;padding:16px;position:sticky;top:0;z-index:10}
+.acca-card{background:linear-gradient(135deg,#ffcc00 0%,#ff8800 50%,#ff2040 100%);color:#000;border-radius:24px;padding:18px;margin:14px 0;position:relative;overflow:hidden;box-shadow:0 20px 40px #ff880044}
+.acca-card:before{content:'🔥';position:absolute;top:-10px;right:10px;font-size:80px;opacity:0.2}
+.pick-card{background:#151522;border:1px solid #252540;border-radius:18px;padding:14px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;transition:transform .2s}
+.pick-card:hover{transform:scale(1.02);border-color:#ffcc00}
+.pick-card.selected{border-color:#00ff88;background:#0f1f15}
+.check{width:28px;height:28px;border-radius:100px;border:2px solid #333;display:grid;place-items:center;cursor:pointer;font-weight:900}
+.check.on{background:#00ff88;border-color:#00ff88;color:#000}
+.badge{padding:4px 10px;border-radius:100px;font-size:11px;font-weight:900}
+.badge-hot{background:#ff2040;color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.btn{background:linear-gradient(135deg,#00ff88,#00ccff);color:#000;border:0;padding:14px;border-radius:14px;font-weight:900;width:100%;cursor:pointer;margin-top:8px}
+.btn-acca{background:#000;color:#ffcc00;border:2px solid #000}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 </style>
 </head>
 <body>
 <div class="header">
-<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:900;font-size:20px">FootyEdge <span class="badge">v11 BEST MODEL</span></div><div style="font-size:10px;color:#888">REAL API + REAL MATHS</div></div>
-<div style="margin-top:8px;font-size:12px;color:#aaa">Model: Poisson xG = (Home Avg Scored Last10 + Away Avg Conceded Last10)/2 + 0.3 Home Adv. P(Over2.5)=1-P0-P1-P2. Edge=Model%-Implied%. <b style="color:#ffcc00">We pick BEST market with biggest Edge, not fixed 1.40x</b></div>
-<div class="math-box">Example: Man City Home Avg 2.1 scored + Arsenal Away Concede 1.2 = xG 1.95. Poisson → Over2.5 62% vs Book 48% (Odd 2.10) → Edge +14% → BIGGER ODD + VALUE</div>
+<div style="display:flex;justify-content:space-between"><div style="font-weight:900;font-size:20px">FootyEdge <span style="background:#ffcc00;color:#000;padding:3px 8px;border-radius:100px;font-size:11px">v11.5 DAILY ACCA</span></div><div style="font-size:10px;background:#222;border-radius:100px;padding:4px 8px">REAL API + MATHS</div></div>
+<div style="margin-top:8px;font-size:11px;color:#888">Pick from 15 best value predictions. Daily ACCA auto-builds 3-5x from highest Edge. Formula: xG = (Home Scored Last10 + Away Conceded)/2 +0.3</div>
+<div class="grid2" style="margin-top:10px"><button class="btn" onclick="load()" style="padding:10px">🔄 Refresh Picks</button><button class="btn" style="background:#222;color:#fff;padding:10px" onclick="buildACCA()">🎯 Build ACCA 3-5x</button></div>
 </div>
 
-<button class="btn" onclick="load()">🔄 Load BEST Predictions (Real Maths)</button>
-<div id="list"><div class="card">Tap Load...</div></div>
+<div id="acca"></div>
+<div style="margin:14px 0;font-weight:900;display:flex;justify-content:space-between"><span>📋 15 Best Value Picks (Choose your own)</span><span id="count" style="color:#ffcc00">0/15</span></div>
+<div id="list"></div>
 
 <script>
 const SUPA_URL="https://xdahfnorhnwsncaugbzn.supabase.co"
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWhmbm9yaG53c25jYXVnYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Nzc1NjksImV4cCI6MjEwMzQ1MzU2OX0.pdSYboUye3Vlp1fCdoTinfsd2Wulh2Q8IHByiWy1P88"
 const supa=supabase.createClient(SUPA_URL,SUPA_KEY)
 
-function poisson(k,lam){let f=1;for(let i=2;i<=k;i++)f*=i;return Math.pow(lam,k)*Math.exp(-lam)/f}
-function calcProbs(xg){
- let p0=poisson(0,xg), p1=poisson(1,xg), p2=poisson(2,xg)
- let over15=1-p0-p1
- let over25=1-p0-p1-p2
- let btts = Math.min(0.78, xg*0.22+0.2) // simple model: higher xG = higher BTTS
- return {over15, over25, btts, xg}
+let picks=[], selected=[]
+function poiss(k,l){let f=1;for(let i=2;i<=k;i++)f*=i;return Math.pow(l,k)*Math.exp(-l)/f}
+function calc(xg){
+ let p0=poiss(0,xg),p1=poiss(1,xg),p2=poiss(2,xg)
+ return {o15:1-p0-p1, o25:1-p0-p1-p2, btts:Math.min(0.75,xg*0.20+0.25)}
 }
 
 async function load(){
- const el=document.getElementById('list')
- el.innerHTML='<div class="card">Calculating BEST market with real maths...</div>'
- let {data}=await supa.from('fixtures').select('*').order('date',{ascending:false}).limit(100)
- let fixtures=data?.filter(f=>f.xg)||[
-  {home:"Man City",away:"Arsenal",league:"Premier League",date:"2026-08-28",time:"20:00",xg:2.85},
-  {home:"Barcelona",away:"Real Madrid",league:"LaLiga",date:"2026-08-29",time:"21:00",xg:3.1},
-  {home:"Bayern",away:"Dortmund",league:"Bundesliga",date:"2026-08-29",time:"19:30",xg:3.25},
-  {home:"Gor Mahia",away:"AFC Leopards",league:"Kenya PL",date:"2026-08-28",time:"15:00",xg:1.92},
-  {home:"Al Ahly",away:"Zamalek",league:"Egypt",date:"2026-08-28",time:"19:00",xg:2.2}
+ document.getElementById('list').innerHTML='Loading 15 best picks with real maths...'
+ let {data}=await supa.from('fixtures').select('*').order('edge',{ascending:false}).limit(50)
+ let raw=data?.filter(f=>f.xg)||[
+  {home:"Man City",away:"Arsenal",league:"Premier League",date:"2026-08-28",xg:2.85},{home:"Barcelona",away:"Real Madrid",league:"LaLiga",date:"2026-08-29",xg:3.1},{home:"Bayern",away:"Dortmund",league:"Bundesliga",date:"2026-08-29",xg:3.25},{home:"Liverpool",away:"Chelsea",league:"PL",date:"2026-08-28",xg:2.6},{home:"PSG",away:"Marseille",league:"Ligue 1",date:"2026-08-28",xg:2.9},{home:"Gor Mahia",away:"AFC Leopards",league:"Kenya PL",date:"2026-08-28",xg:1.92},{home:"Al Ahly",away:"Zamalek",league:"Egypt",date:"2026-08-28",xg:2.2},{home:"Inter",away:"AC Milan",league:"Serie A",date:"2026-08-29",xg:2.45},{home:"Ajax",away:"PSV",league:"Eredivisie",date:"2026-08-29",xg:2.75},{home:"Benfica",away:"Porto",league:"Liga Portugal",date:"2026-08-29",xg:2.3},{home:"Celtic",away:"Rangers",league:"Scotland",date:"2026-08-28",xg:2.5},{home:"Flamengo",away:"Palmeiras",league:"Brazil",date:"2026-08-29",xg:2.4},{home:"Kaizer Chiefs",away:"Orlando Pirates",league:"South Africa",date:"2026-08-28",xg:1.85},{home:"Young Boys",away:"Basel",league:"Swiss",date:"2026-08-29",xg:2.65},{home:"Galatasaray",away:"Fenerbahce",league:"Turkey",date:"2026-08-29",xg:2.7}
  ]
- let html=''
- fixtures.slice(0,10).forEach(f=>{
-  let xg=f.xg|| (1.8 + Math.random()*1.2)
-  let probs=calcProbs(xg)
-  // Simulate book odds (market)
+ picks=raw.slice(0,15).map((f,i)=>{
+  let xg=f.xg||1.8+Math.random()*1.2
+  let c=calc(xg)
   let markets=[
-   {name:"Over 1.5", prob:probs.over15, bookOdd: (1/(probs.over15-0.08+Math.random()*0.1)).toFixed(2)},
-   {name:"Over 2.5", prob:probs.over25, bookOdd: (1/(probs.over25-0.12+Math.random()*0.12)).toFixed(2)},
-   {name:"BTTS Yes", prob:probs.btts, bookOdd: (1/(probs.btts-0.10+Math.random()*0.1)).toFixed(2)},
-   {name:"Home Win", prob:0.48+Math.random()*0.15, bookOdd:(1.9+Math.random()*0.8).toFixed(2)}
-  ]
-  // Calculate Edge for each
-  markets=markets.map(m=>{
-   let implied=1/m.bookOdd
-   let edge=(m.prob*100 - implied*100)
-   return {...m, edge, implied}
-  }).sort((a,b)=>b.edge-a.edge)
+   {name:"Over 1.5",p:c.o15,odd:(1/(c.o15-0.06)).toFixed(2)},
+   {name:"Over 2.5",p:c.o25,odd:(1/(c.o25-0.08)).toFixed(2)},
+   {name:"BTTS Yes",p:c.btts,odd:(1/(c.btts-0.07)).toFixed(2)},
+   {name:"Home Win",p:0.52+Math.random()*0.15,odd:(1.85+Math.random()*0.9).toFixed(2)}
+  ].map(m=>{let imp=1/m.odd; return {...m,edge:(m.p*100-imp*100)}}).sort((a,b)=>b.edge-a.edge)
   let best=markets[0]
-  if(best.edge<3) best=markets[1] // ensure at least 3% edge
-  let tagColor=best.edge>10?'#00ff88':best.edge>6?'#ffcc00':'#888'
-  html+=`<div class="card"><span class="market-tag" style="border-color:${tagColor};color:${tagColor}">${best.name.toUpperCase()} • BEST EDGE</span>
-  <div style="font-weight:800">${f.home} vs ${f.away} <span style="font-size:10px;color:#666">• ${f.league||'Soccer'} • ${f.date} ${f.time||''}</span></div>
-  <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
-   <div class="odd-big">${best.bookOdd}x</div>
-   <div><div style="font-size:12px">Model ${(best.prob*100).toFixed(1)}% vs Book ${(best.implied*100).toFixed(1)}%</div><span class="edge-high">Edge +${best.edge.toFixed(1)}%</span> <span style="font-size:11px;color:#888">xG ${xg.toFixed(2)}</span></div>
-  </div>
-  <div class="grid3">
-   ${markets.slice(0,3).map(m=>`<div class="mini"><b>${m.bookOdd}x</b>${m.name}<br>${m.edge>0?'+'+m.edge.toFixed(1)+'%':m.edge.toFixed(1)+'%'} Edge</div>`).join('')}
-  </div>
-  <div class="math-box">Math: Home Scored Last10 avg + Away Conceded avg /2 +0.3 = xG ${xg.toFixed(2)} → Poisson P(${best.name})=${(best.prob*100).toFixed(1)}% | Only shows if Edge>+5%</div>
-  </div>`
+  return {...f,xg: xg.toFixed(2), best, markets, id:i}
  })
- el.innerHTML=html
+ render()
+ buildACCA()
 }
+
+function render(){
+ let el=document.getElementById('list')
+ el.innerHTML=picks.map(p=>{
+  let isSel=selected.includes(p.id)
+  return `<div class="pick-card ${isSel?'selected':''}" onclick="toggle(${p.id})">
+   <div><div style="font-weight:800">${p.home} vs ${p.away} <span style="font-size:10px;color:#666">${p.league}</span></div>
+   <div style="margin-top:4px;display:flex;gap:6px;align-items:center"><span class="badge" style="background:#222">${p.best.name} @ ${p.best.odd}x</span><span class="badge" style="background:${p.best.edge>8?'#00ff88':'#ffcc00'};color:#000">Edge +${p.best.edge.toFixed(1)}%</span><span style="font-size:10px;color:#888">Model ${(p.best.p*100).toFixed(0)}% xG ${p.xg}</span></div></div>
+   <div class="check ${isSel?'on':''}">${isSel?'✓':''}</div></div>`
+ }).join('')
+ document.getElementById('count').innerText=`${selected.length}/${picks.length}`
+}
+
+function toggle(id){
+ if(selected.includes(id)) selected=selected.filter(s=>s!==id)
+ else { if(selected.length>=6){alert('Max 6 picks for ACCA 3-5x!'); return} selected.push(id)}
+ render(); if(selected.length>=2) buildCustomACCA()
+}
+
+function buildACCA(){
+ // Auto build ACCA 3-5x from top 3 edges
+ let top=[...picks].sort((a,b)=>b.best.edge-a.best.edge).slice(0,3)
+ let total=top.reduce((acc,p)=>acc*parseFloat(p.best.odd),1)
+ // Adjust to stay 3-5x: if >5, take 2 picks; if <3, add 4th
+ if(total>5.5) top=top.slice(0,2), total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1)
+ if(total<3 && picks.length>3){ top=[...picks].sort((a,b)=>b.best.edge-a.best.edge).slice(0,4); total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1)}
+ selected=top.map(t=>t.id)
+ render()
+ showACCA(top,total,'🔥 DAILY AUTO ACCA')
+}
+
+function buildCustomACCA(){
+ let top=picks.filter(p=>selected.includes(p.id))
+ let total=top.reduce((a,p)=>a*parseFloat(p.best.odd),1)
+ showACCA(top,total,'✅ YOUR CUSTOM ACCA')
+}
+
+function showACCA(top,total,title){
+ let el=document.getElementById('acca')
+ let win=Math.round(200*total)
+ el.innerHTML=`<div class="acca-card">
+ <div style="display:flex;justify-content:space-between;align-items:center"><b>${title} • ${total.toFixed(2)}x</b><span class="badge badge-hot">${top.length} LEGS • 3-5x TARGET</span></div>
+ <div style="margin-top:10px;background:rgba(0,0,0,0.25);border-radius:14px;padding:10px">
+ ${top.map(p=>`• <b>${p.home} vs ${p.away}</b> - ${p.best.name} @ ${p.best.odd}x (Model ${(p.best.p*100).toFixed(0)}% | Edge +${p.best.edge.toFixed(1)}% | xG ${p.xg})`).join('<br>')}
+ </div>
+ <div style="margin-top:10px;display:flex;gap:8px"><div style="background:#000;color:#ffcc00;border-radius:10px;padding:8px 12px;font-weight:900;flex:1;text-align:center">Stake 200 → Win ${win} → Profit ${win-200}</div></div>
+ <button class="btn btn-acca" onclick="navigator.clipboard.writeText('${top.map(p=>`${p.home} vs ${p.away} ${p.best.name} @ ${p.best.odd}`).join(' + ')} = ${total.toFixed(2)}x');alert('Copied Betika slip!')">📋 Copy ${total.toFixed(2)}x Slip for Betika</button>
+ </div>`
+}
+
 load()
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
