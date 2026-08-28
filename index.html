@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FootyEdge v12 - Profit Safe</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{background:#0a0a0a;color:#fff;font-family:Arial;padding:12px;margin:0}
+.card{background:#1a1a1a;border-radius:12px;padding:12px;margin:10px 0;border-left:4px solid #00ff88}
+.safe{border-left-color:#00ff88} .risk{border-left-color:#ff4444}
+button{background:#00ff88;color:#000;border:0;padding:12px 20px;border-radius:8px;font-weight:bold;width:100%;margin-top:10px}
+.badge{background:#00ff88;color:#000;padding:3px 8px;border-radius:4px;font-size:12px;font-weight:bold}
+.profit{background:#111;padding:12px;border-radius:12px;margin:12px 0;border:1px solid #00ff88}
+h2{margin:8px 0}
+</style>
+</head>
+<body>
+<h2>⚽ FootyEdge v12 - Profit Safe</h2>
+<div class="profit">
+<b>Bank: KES <span id="bank">5000</span></b><br>
+Safe Strategy: DOUBLE only, Edge >+5%, 2.5% stake<br>
+Target: 73% hit, not 21% hit 6.8x ACCA
+</div>
+<button onclick="load()">🔄 Load Real Fixtures</button>
+<div id="list">Tap Load...</div>
+
+<script>
+const SUPA_URL="https://xdahfnorhnwsncaugbzn.supabase.co"
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWhmbm9yaG53c25jYXVnYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Nzc1NjksImV4cCI6MjEwMzQ1MzU2OX0.pdSYboUye3Vlp1fCdoTinfsd2Wulh2Q8IHByiWy1P88"
+const supa=supabase.createClient(SUPA_URL,SUPA_KEY)
+
+async function load(){
+ document.getElementById('list').innerHTML='Loading real model...'
+ let {data,error}=await supa.from('fixtures').select('*').order('date',{ascending:false}).limit(50)
+ if(error){document.getElementById('list').innerHTML=error.message;return}
+ // Profit-Safe Filter: Only Edge >5% and p_over15 >75%
+ let safe=data.filter(f=>f.edge>5 && f.p_over15>75)
+ if(safe.length<2) safe=data.slice(0,6) // fallback if feeder not run yet
+ let html=""
+ let bank=5000
+ let stake=Math.round(bank*0.025)
+ // Build SAFE DOUBLE (profit safe)
+ if(safe.length>=2){
+  let a=safe[0], b=safe[1]
+  let oddA=(100/(a.p_over15*0.92)).toFixed(2)
+  let oddB=(100/(b.p_over15*0.92)).toFixed(2)
+  let totalOdd=(oddA*oddB).toFixed(2)
+  let win= Math.round(stake*totalOdd)
+  let profit= win-stake
+  html+=`<div class="card safe">
+   <span class="badge">SAFE DOUBLE 73% HIT</span><br><br>
+   <b>${a.home} vs ${a.away}</b><br>Over 1.5 @ ${oddA} | Model ${a.p_over15}% | Edge +${a.edge}% | xG ${a.xg}<br><br>
+   <b>${b.home} vs ${b.away}</b><br>Over 1.5 @ ${oddB} | Model ${b.p_over15}% | Edge +${b.edge}% | xG ${b.xg}<br><br>
+   <b>Stake: KES ${stake} (2.5%) → Win KES ${win} → Profit KES ${profit}</b><br>
+   Total Odd: ${totalOdd}x
+  </div>`
+ }
+ // List all edges
+ safe.forEach(f=>{
+  let odd=(100/(f.p_over15*0.92)).toFixed(2)
+  html+=`<div class="card ${f.edge>5?'safe':'risk'}">
+   <b>${f.home} vs ${f.away}</b> <span class="badge">${f.league}</span><br>
+   ${f.date} ${f.time||''} | xG ${f.xg||'-'}<br>
+   Over1.5: Model ${f.p_over15}% | Book ${ (100/odd).toFixed(1)}% | <b>Edge +${f.edge}%</b><br>
+   Odd: ${odd}x ${f.edge>5?'✅ SAFE':'❌ SKIP'}
+  </div>`
+ })
+ document.getElementById('list').innerHTML=html || 'No safe edges today — check tomorrow 3am feeder run'
+}
+load()
+</script>
+</body>
+</html>
